@@ -18,7 +18,7 @@ The run response contains `elapsed_ns`, `comparisons`, and `moves`; the API draf
 - D. Not yet defined
 - X. Other (please specify)
 
-[Answer]:
+[Answer]: C. Show output differences and all available metrics without ranking or recommendation
 
 ## Q3. Existing interfaces and storage
 The current drafts describe `POST /v1/runs` for creating runs and `GET /v1/runs/{run_id}` for retrieving stored runs. What dependencies should the comparison endpoint use?
@@ -29,17 +29,13 @@ The current drafts describe `POST /v1/runs` for creating runs and `GET /v1/runs/
 - D. Not yet defined
 - X. Other (please specify)
 
-[Answer]:
+[Answer]: A. Reuse the existing run retrieval interface and result store
 
 ## Q4. Technical stack
 The workspace scan did not identify a language, framework, or build system. What stack or existing project standard should implementation follow?
 
-- A. Use the stack already established in the application repository
-- B. A specific stack is required; I will name it
-- C. The stack has not been decided
-- X. Other (please specify)
 
-[Answer]:
+[Answer]: 2. Python stack
 
 ## Q5. Data and compliance constraints
 The current run examples use integer arrays and algorithm measurements. Are there privacy, security, retention, or regulatory requirements for stored runs or comparison responses?
@@ -50,7 +46,7 @@ The current run examples use integer arrays and algorithm measurements. Are ther
 - D. Not yet defined
 - X. Other (please specify)
 
-[Answer]:
+[Answer]: A. No additional requirements are known
 
 ## Q6. Delivery constraints
 Are there budget, timeline, release, or organizational constraints that affect this endpoint?
