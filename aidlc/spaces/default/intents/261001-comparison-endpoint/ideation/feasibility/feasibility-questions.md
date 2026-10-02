@@ -34,6 +34,10 @@ The current drafts describe `POST /v1/runs` for creating runs and `GET /v1/runs/
 ## Q4. Technical stack
 The workspace scan did not identify a language, framework, or build system. What stack or existing project standard should implementation follow?
 
+- A. Use the stack already established in the application repository
+- B. A specific stack is required; I will name it
+- C. The stack has not been decided
+- X. Other (please specify)
 
 [Answer]: 2. Python stack
 
@@ -58,7 +62,7 @@ Are there budget, timeline, release, or organizational constraints that affect t
 - E. Not yet defined
 - X. Other (please specify)
 
-[Answer]:
+[Answer]: A. No specific constraints are known
 
 ## Q7. Hosting and operations
 The project drafts do not establish which cloud accounts or hosting services are in use. Where must the endpoint run, and are there operational requirements to preserve?
@@ -68,4 +72,19 @@ The project drafts do not establish which cloud accounts or hosting services are
 - C. Hosting and operational requirements are not yet decided
 - X. Other (please specify)
 
-[Answer]:
+[Answer]: C. Hosting and operational requirements are not yet decided
+
+## Consolidated Summary Confirmation
+
+- The endpoint compares two existing runs identified by run IDs, using the existing retrieval interface and result store.
+- The response should show output differences and available metrics without ranking or recommendation. Elapsed time is environment-dependent; the existing API draft cautions against using it alone to rank algorithms.
+- Use a Python stack.
+- No additional data or compliance requirements or specific delivery constraints are currently known.
+- Hosting and operational requirements are not yet decided.
+
+Does this all look correct before I generate the feasibility assessment?
+
+- Looks correct
+- Request changes
+
+[Answer]: Looks correct
