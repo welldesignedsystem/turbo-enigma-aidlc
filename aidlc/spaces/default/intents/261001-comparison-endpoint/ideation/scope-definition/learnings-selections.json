@@ -1,0 +1,13 @@
+{
+  "stage_slug": "scope-definition",
+  "space": "default",
+  "intent": "261001-comparison-endpoint",
+  "selections": [
+    {
+      "candidate_id": "c1",
+      "heading": "Corrections",
+      "text": "Treat input and step-counting-version compatibility as separate scope decisions; they affect different claims about whether stored metrics and outputs can be compared fairly.",
+      "scope": "project"
+    }
+  ]
+}

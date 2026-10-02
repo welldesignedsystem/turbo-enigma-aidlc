@@ -3,7 +3,9 @@
 
 ## Interpretations
 <!-- example: 2026-05-29T10:14:32Z — chose REST over GraphQL; the consuming team only needs CRUD, revisit if subscriptions land -->
-- 2026-10-02T00:40:00Z — The selected Python stack is feasible for the read-only comparison path, but the draft run-service latency target assumes compiled execution; keep that performance claim open until measured against the real implementation.
+- 2026-10-02T01:53:09Z — Carry the unresolved algorithm-set policy and storage/testing ownership into the handoff as pre-implementation items; the already approved input and step-counting rules remain settled.
+- 2026-10-02T02:32:02Z — Present Inception as approved to proceed, not as implementation approval; market evidence, service implementation, and performance measurements remain unverified.
+- 2026-10-02T01:53:09Z — Carry the unresolved algorithm-set policy and storage/testing ownership into the handoff as pre-implementation items; the already approved input and step-counting rules remain settled.
 
 ## Deviations
 <!-- example: 2026-05-29T10:14:32Z — skipped the optional caching layer the stage prose suggested; the dataset is small enough that it adds risk -->

@@ -1,0 +1,13 @@
+{
+  "stage_slug": "feasibility",
+  "space": "default",
+  "intent": "261001-comparison-endpoint",
+  "selections": [
+    {
+      "candidate_id": "c1",
+      "heading": "Corrections",
+      "text": "The selected Python stack is feasible for the read-only comparison path, but the draft run-service latency target assumes compiled execution; keep that performance claim open until measured against the real implementation.",
+      "scope": "project"
+    }
+  ]
+}

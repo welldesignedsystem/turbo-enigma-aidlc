@@ -128,87 +128,102 @@ Commit the `aidlc/` workspace tree — the record (state, the per-clone audit sh
 
 # Working in this workspace
 
-*Repo-specific notes. Everything above the `END` marker is framework-generated — keep new
-content below it.*
+*Repo-specific notes. Everything above the `END AI-DLC:agents` marker is framework-generated —
+keep new content below it. `aidlc` v2.10.0 is on PATH.*
 
-## Topology: AI-DLC workspace root + two independent sibling repos
+## Three trees, three git repos
 
 | Path | What it is | Commit at this root? |
 |---|---|---|
-| `aidlc/` | AI-DLC records: state, audit shards, per-stage artifacts | **yes** — this is the shared record |
-| `.aidlc/` | Framework engine, compiled stage graph, harness config | **yes** |
-| `.github/` | Copilot harness surface: `skills/`, `agents/`, `hooks/aidlc.json` | **yes** |
-| `AGENTS.md`, `.gitignore` | this file + ignore rules | **yes** |
-| `turbo-enigma/` | **separate git repo** — the app goes here | **no** — commit inside it |
-| `turbo-enigma-knowledge-base/` | **separate git repo** — the docs bundle | **no** — commit inside it |
+| `aidlc/` | AI-DLC records for the active intent (state, audit shards, stage artifacts) | **yes** — the shared record |
+| `.aidlc/` + `.github/` | Framework engine (compiled stage graph, tools, hooks) and the Copilot harness surface | **yes** |
+| `turbo-enigma/` | **separate git repo** — the Algorithm Run Service goes here | **no** — commit inside it |
+| `turbo-enigma-knowledge-base/` | **separate git repo** — the OKF docs bundle | **no** — commit inside it |
 
-## Never commit the sibling repos from this root
+The active intent already registers both siblings in its manifest (`aidlc engine intent list
+--json` → `"repos"`).
 
-They are independent repos (remotes `github.com/welldesignedsystem/turbo-enigma` and
-`…/turbo-enigma-knowledge-base`) and are gitignored here on purpose. `git add` on one emits
-`warning: adding embedded git repository` and records a **gitlink** (mode 160000); since this
-repo has no `.gitmodules`, a fresh clone then yields an empty directory with no URL to recover
-from. The framework wants *gitignored siblings*, not submodules
-(`.aidlc/tools/aidlc-workspace-doctor.ts:3`): `discoverSiblingRepos`
-(`.aidlc/tools/aidlc-lib.ts:20448`) finds repos by scanning for sibling directories containing
-`.git`, and multi-repo bolts/worktrees re-anchor git operations to a sibling's own checkout via
-`--repo` (`.aidlc/tools/aidlc-bolt.ts:410`) — a construct that is meaningless for a submodule.
+### Never commit the siblings from this root
 
-`turbo-enigma/` has **zero commits**, so git refuses to index it at all
-(`does not have a commit checked out`). Its first commit must happen inside that repo.
+`git add turbo-enigma` here records a **gitlink** (mode 160000) with no `.gitmodules` behind
+it, so a fresh clone gets empty directories and no recovery URL. They are gitignored on purpose
+(entries sit *below* `# END AI-DLC:gitignore`). The framework wants *gitignored siblings*, not
+submodules: `discoverSiblingRepos` in `.aidlc/tools/aidlc-lib.ts` locates repos by scanning for
+sibling dirs containing `.git`, and Bolt worktrees re-anchor git via `--repo`
+(`.aidlc/tools/aidlc-bolt.ts`) — meaningless for a submodule.
 
-An optional root `repos.json` (`{ "org", "repos": [{name, branch?, url?}] }`) enables
-`workspace-sync` clone/sync automation. Unneeded while both repos are already cloned, and
-`workspace-sync` is a hidden routed-only command (`.aidlc/tools/aidlc.ts:1036`), not
-user-invocable. If you add one, set an explicit `url` per entry — it otherwise defaults to
-`git@github.com:${org}/${name}.git` while these remotes are HTTPS.
+`turbo-enigma/` has **zero commits**, so git refuses to index it at all (`does not have a commit
+checked out`). Its first commit must happen inside that repo.
 
-## Resolve workflow state, don't hardcode it
+Optional root `repos.json` enables `workspace-sync` clone automation — unneeded while both repos
+are cloned, and `workspace-sync` is routed-only, not user-invocable. If you add one, set an
+explicit `url` per entry; it otherwise defaults to `git@…` while these remotes are HTTPS.
 
-- `cat aidlc/spaces/default/intents/active-intent` → active slug
-- `aidlc/spaces/default/intents/<YYMMDD>-<slug>/aidlc-state.md` → `## Current Status`
-  (`Current Stage`, `Next Stage`) and `## Session Resume Point`
-- `aidlc engine intent list` · `aidlc engine intent switch <name>`
+## Resolve workflow state from the CLI, never from a snapshot
 
-As of this writing: intent `261001-comparison-endpoint`, scope `feature`, stage
-`intent-capture` (Ideation), next `market-research`, guard policy `relaxed`, 32 stages with
-`2.1 reverse-engineering` skipped (greenfield).
+```
+aidlc engine status        # phase, current stage, next stage, guard fences, completion
+aidlc engine intent list   # active intent + its registered repos
+```
+
+`aidlc status` does **not** exist — the top level only has `config`, `doctor`, `update`, `use`,
+`version`, `uninstall`; every workflow verb lives under `aidlc engine` (`aidlc engine --help`).
+The `/aidlc --status` slash command in the generated block is Copilot-only.
+
+For anything the summary omits, read
+`aidlc/spaces/default/intents/<YYMMDD>-<slug>/aidlc-state.md` (`## Current Status`,
+`## Session Resume Point`). Stage artifacts land in `<record>/<phase>/<stage>/`.
+
+## The design already exists — read the sibling KB before designing anything
+
+`turbo-enigma-knowledge-base/` specifies this endpoint in full: `api/run-comparison-endpoint.md`
+(the request/response contract), `requirements/functional-requirements.md` (FR-1…FR-11),
+`design/` (algorithm registry, step counting, timing), `api/error-model.md`. It is **draft and
+unvalidated** — no service code exists yet. Consult it rather than reinventing it; if a doc is
+wrong, say so and fix it there under that repo's own rules (`AGENTS.md` in it: OKF v0.2
+frontmatter `type`, bundle-relative links only, `generated.at` bumps, `log.md` entries).
+
+Two traps in that bundle: `glossary.md` is the *only* definition of a "step", and its measured
+performance figures describe instrumented reference implementations, not production code —
+carry `references/measurement-provenance.md` with any number you reuse.
 
 ## Generated regions — never hand-edit inside these
 
-- **This file** between `<!-- BEGIN AI-DLC:agents -->` and `<!-- END AI-DLC:agents -->`.
-- The `@aidlc/spaces/default/memory/*.md` lines in it — that is the method include Copilot
-  expands into ambient context; `/aidlc space <name>` re-points them in place.
-- **`.gitignore`** between `# BEGIN AI-DLC:gitignore` and `# END AI-DLC:gitignore`. The
-  sibling-repo entries sit *below* that block on purpose, so an `aidlc` refresh cannot wipe them.
-- **`.aidlc/tools/data/*`** (compiled stage graph, settings schema) and `.aidlc/tools/*.ts` —
-  framework sources, replaced by `aidlc update`.
-- **`.github/skills/aidlc-<stage>/`** stage runners, generated from the stage graph. Drift
-  guard: `aidlc engine gen runners --check` (30 runners, in sync).
-- **`aidlc-state.md`** and every `<record>/<phase>/<stage>/memory.md` observation diary.
+- This file between `<!-- BEGIN AI-DLC:agents -->` and `<!-- END AI-DLC:agents -->`, including
+  the `@aidlc/spaces/default/memory/*.md` include lines.
+- `.gitignore` between `# BEGIN AI-DLC:gitignore` and `# END AI-DLC:gitignore`.
+- `.aidlc/tools/*.ts` and `.aidlc/tools/data/*` — replaced by `aidlc update`.
+- `.github/skills/aidlc-<stage>/` — generated from the compiled stage graph. Drift guard:
+  `aidlc engine gen runners --check` (30 runners, in sync).
+- `aidlc-state.md` and every `<record>/<phase>/<stage>/memory.md` observation diary.
 
-`aidlc/spaces/default/memory/{org,team,project}.md` are not free-form either — the
-practices-discovery gate and the §13 learnings ritual own them. A direct edit skips the tool's
-audit event, its duplicate-key check, and its admission conflict check. Record learnings through
-the ritual, not by editing the file.
+`aidlc/spaces/default/memory/{org,team,project}.md` are owned by the practices-discovery gate and
+the §13 learnings ritual, not by hand editing — a direct edit skips the audit event, the
+duplicate-key check, and the admission conflict check. Read them as a strict-additive chain:
+`org` → `team` → `project`, then `phases/<phase>.md`, then the stage file in
+`.aidlc/aidlc-common/stages/<phase>/`. One decision is already recorded in `project.md`
+§Corrections: the comparison carries **both** per-run metrics and output differences — don't
+re-ask it.
+
+## Guards are the human's switch, never yours
+
+Asked in plain words to relax or disable guards: run nothing, investigate nothing — name the
+command (`aidlc engine config set guard-policy relaxed|off`) and end the turn. Never edit
+`aidlc-state.md` or a fence setting on your own initiative. `aidlc engine status` prints the
+current policy and every fence with its provenance.
 
 ## Harness is Copilot; you may be running under opencode
 
-`harness.json` reports `distribution: copilot` — skills in `.github/skills/`, hooks in
-`.github/hooks/aidlc.json`. The generated block above lists `.aidlc/onboarding.md` as the
-opencode onboarding file; **it does not exist here** (this is a Copilot install), so don't
-hunt for it. Under opencode those Copilot hooks never fire, so drive the workflow with the
-`aidlc` CLI and do not expect hook-enforced guards to catch anything.
+`.aidlc/tools/data/harness.json` reports `distribution: copilot` — skills in `.github/skills/`,
+hooks in `.github/hooks/aidlc.json`. The generated block lists `.aidlc/onboarding.md` as the
+opencode onboarding file; **it does not exist here**, so don't hunt for it. Under opencode:
+
+- Those Copilot hooks never fire, so no gate, sensor, audit entry, or guard is enforced for you.
+- The `@…/memory/*.md` imports in the generated block do not expand either — **read those rule
+  files yourself**, in the order given above.
 
 ## Verification is manual for now
 
-No CI, no build, and no test tooling exists anywhere yet. `turbo-enigma/` has no
-`package.json` or tsconfig, so the default `aidlc-linter` (eslint) and `aidlc-type-check` (tsc)
-sensors have nothing to run against until that repo is set up.
-
-## The knowledge base owns its own rules
-
-`turbo-enigma-knowledge-base/` ships its own `AGENTS.md` — OKF v0.2 conventions (non-empty
-frontmatter `type`, bundle-relative links only, `generated.at` bumps, `log.md` entries, and the
-`unverified` vs `human-reviewed` trust tier). Read it before editing that bundle; it is
-authoritative there and this file does not restate it.
+No CI, no build, no test tooling anywhere in the workspace: `turbo-enigma/` has no
+`package.json` and the KB is docs-only, so the default `linter` (eslint) and `type-check` (tsc)
+sensors have nothing to run against yet. Don't report a check as passing — say it can't run.

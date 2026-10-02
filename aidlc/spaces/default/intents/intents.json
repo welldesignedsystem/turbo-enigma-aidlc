@@ -6,7 +6,6 @@
     "scope": "feature",
     "repos": [
       "turbo-enigma",
-      "turbo-enigma-knowledge-base"
     ],
     "status": "in-flight"
   }

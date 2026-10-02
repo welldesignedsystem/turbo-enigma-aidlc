@@ -1,0 +1,13 @@
+{
+  "stage_slug": "team-formation",
+  "space": "default",
+  "intent": "261001-comparison-endpoint",
+  "selections": [
+    {
+      "candidate_id": "c1",
+      "heading": "Corrections",
+      "text": "Team formation confirms one developer with dedicated capacity and occasional reviews, not a mob; storage/retrieval, testing, and operational skill coverage remain unconfirmed and should be assigned before implementation.",
+      "scope": "project"
+    }
+  ]
+}
