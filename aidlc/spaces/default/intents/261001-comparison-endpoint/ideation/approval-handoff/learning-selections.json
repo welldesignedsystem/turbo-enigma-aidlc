@@ -1,0 +1,15 @@
+{
+  "stage_slug": "approval-handoff",
+  "space": "default",
+  "intent": "261001-comparison-endpoint",
+  "selections": [
+    {
+      "candidate_id": "c1",
+      "type": "learning",
+      "scope": "project",
+      "heading": "Corrections",
+      "text": "Carry the unresolved algorithm-set policy and storage/testing ownership into the handoff as pre-implementation items",
+      "source": "orchestrator"
+    }
+  ]
+}
